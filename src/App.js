@@ -1,26 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import "./App.css";
+import { Form } from "./components/Input";
+import { Recipe } from "./components/Recipe";
+import { RecipeWrapper } from "./components/RecipeWrapper";
+import { getRecipes } from "./api/get-recipes";
+
+class App extends Component {
+  state = {
+    count: null,
+    recipes: [],
+  };
+
+  getRecipe = async e => {
+    e.preventDefault();
+    const searchTerm = e.target.elements.searchTerm.value;
+    const recipeList = await getRecipes(searchTerm);
+    this.setState({
+      count: recipeList.count,
+      recipes: recipeList.recipes,
+    });
+  };
+
+  render() {
+    return (
+      <div className="App">
+        <header className="App-header">
+          <h1 className="App-Title">Search for a recipe:</h1>
+        </header>
+        <Form getRecipe={this.getRecipe} />
+        <RecipeWrapper>
+          {this.state.recipes.map(recipe => (
+            <Recipe key={recipe.recipe_id} recipe={recipe} />
+          ))}
+        </RecipeWrapper>
+      </div>
+    );
+  }
 }
 
 export default App;
